@@ -4,6 +4,8 @@ from selenium.webdriver.common.by import By
 import requests
 import lxml.html as lh
 import pandas as pd
+import csv
+from bs4 import BeautifulSoup
 
 driver = webdriver.Chrome()
 driver.get('https://www.portnet.com/login')
@@ -24,7 +26,7 @@ password.send_keys('Welcome1')
 driver.find_element_by_name('Login').click()
 
 assert 'No results found.' not in driver.page_source
-print('***You are in',driver.title,'***')
+print('*** You are in',driver.title,'***')
 
 driver.implicitly_wait(5) # seconds
 
@@ -33,11 +35,41 @@ driver.switch_to_frame('Main')
 driver.find_element_by_partial_link_text('VEDA').click()
 
 driver.implicitly_wait(5) # seconds
-window_etb = driver.window_handles[1]
-doc = lh.fromstring(window_etb.content)
+
+# finding vessel ETB
 vslName = driver.find_element_by_name('{actionForm.vslName}')
 vslName.clear
 vslName.send_keys('XING PING')
 driver.find_element_by_xpath('/html/body/form/table[1]/tbody/tr/td/table[2]/tbody/tr[1]/td[4]/input').click()
+
+driver.implicitly_wait(5) # seconds
+
+# entered ETB URL
+window_etb = driver.window_handles[1]
+
+page = requests.get(driver.current_url).text
+# USING SOUP
+soup = BeautifulSoup(page,'lxml')
+my_table = soup.find('form',{'name':'enquireBerthingVEsselForm'})
+links = my_table.findAll('td')
+data = []
+for link in links:
+    data.append(link.get('title'))
+
+# USING LXML
+# doc = lh.fromstring(page)
+# tr_elements = doc.xpath('//tr')
+
+#Create empty list
+
+# col=[]
+# i=0
+#For each row, store each first element (header) and an empty list
+
+# for t in tr_elements[0]:
+#     i+=1
+#     name=t.text_content()
+#     print ('%d:"%s"'%(i,name))
+#     col.append((name,[]))
 
 # driver.quit()
