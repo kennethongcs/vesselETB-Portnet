@@ -25,6 +25,8 @@ password.send_keys('Welcome1')
 
 driver.find_element_by_name('Login').click()
 
+driver.find_element_by_xpath('//*[@id="Login"]/table/tbody/tr[9]/td/p/input').click()
+
 assert 'No results found.' not in driver.page_source
 print('*** You are in',driver.title,'***')
 
@@ -50,8 +52,8 @@ window_etb = driver.window_handles[1]
 page = requests.get(driver.current_url).text
 # USING SOUP
 soup = BeautifulSoup(page,'lxml')
-my_table = soup.find('form',{'name':'enquireBerthingVEsselForm'})
-links = my_table.findAll('td')
+my_table = soup.find('table',{'border':'0'})
+links = my_table.findAll('a')
 data = []
 for link in links:
     data.append(link.get('title'))
